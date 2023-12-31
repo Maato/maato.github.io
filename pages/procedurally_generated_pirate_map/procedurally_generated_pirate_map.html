@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html
+xmlns='http://www.w3.org/1999/xhtml'><head><link
+rel='icon' href='data:image/gif;base64,R0lGODlhIAAgAPAAAAAAAAAAACH5BAEAAAEALAAAAAAgACAAAAJFjI+py+0Po5y02quA3rz7zXziGI4mV55nqpIY8r1wJxsxpSX3hNpe9dvxVJjVyyUTJn81H60ZUB6ZTWoVBD3kstyut1sAADs=' /><title>Procedurally Generated Pirate Map | nullwise</title><meta
+http-equiv='Content-Type' content='text/html;charset=utf-8' /><meta
+name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' /><link
+rel='stylesheet' href='../../style.css?v=sun_01_may' type='text/css' /><script type='text/javascript' src='../../scripts/images.js'></script><script type='text/javascript'>/*<![CDATA[*/function ol() { var i = document.getElementsByTagName('iframe'); if(i.length > 0 && i[0].hasAttribute('delay_src')) i[0].src = i[0].getAttribute('delay_src'); }/*]]>*/</script></head><body
+onload='ol();'><div
+class='header'><div
+class='menu'><div
+class='row page_width'><span
+class='entry'><a
+href='../../index.html'>Home</a> </span><span
+class='entry'><a
+href='../../contact.html'>Contact</a> </span></div><div
+class='hr'></div></div></div><div
+class='content page_width'><div
+class='extrabox'></div><h1>Procedurally Generated Pirate Map</h1> Back in January reddit user Bergasms organized a friendly challenge in the <a
+class='external' href='https://reddit.com/r/proceduralgeneration/'>procedural generation subreddit<span></span></a>. The goal of this challenge was to procedurally generate a pirate map. I participated and ended up with some pretty nice results. I mostly used the challenge as an oppurtunity to try some interesting algorithms I had heard of but never implemented or used myself.<h2>General approach</h2> First a heightmap is generated to determine the shape of the main landmass, then another heightmap is generated to determine the actual height of that landmass, that height then directly translates to the type of terrain that will appear on that landmass. Depending on the height the map is divided into 'sea', 'land', 'inland lakes (sea level)', 'forested land' and 'mountains'. The background for the sea has a different color than the background of the landmass. The sea is decorated using some varying wave images. The inland lakes are indicated by overlaying some diagonal lines and an outline. The forests are indicated by some small trees. The mountains are decorated by placing multiple mountain images close together in a specific pattern. An 'x' with a dashed line is rendered over top to indicate where the pirate's treasure lies. Mountains are given names and finally a random compass rose is rendered.<h2>Heightmaps</h2> The two heightmaps are generated using the <a
+class='external' href='https://en.wikipedia.org/wiki/Diamond-square_algorithm'>diamond-square algorithm<span></span></a>. In the default algorithm the random distribution is uniform, however I was seeking specifically to generate the shape of an island, so instead of using a totally random number distribution I make sure the random number generator returns low values at the edges of the heightmap and a high value in the center of the map. This ensures that the generated landmass will be centrally located and surrounded by water. The shape of the landmass is then determined by a fixed threshold. As a final touch the entire heightmap is translated so that the landmass is centered.<center><div
+onclick='imageViewer.showImage("island_01_shape_grayscale.png", "Heightmap used to determine the shape of the landmass", "")' class='cscs'><a
+onclick='return false;' href='island_01_shape_grayscale.png'><img
+src='thumbs/island_01_shape_grayscale.png' alt='Heightmap used to determine the shape of the landmass' /></a></div><div
+onclick='imageViewer.showImage("island_02_shape_colored.png", "Debug display showing terrain types", "")' class='cscs'><a
+onclick='return false;' href='island_02_shape_colored.png'><img
+src='thumbs/island_02_shape_colored.png' alt='Debug display showing terrain types' /></a></div></center> Because we used this non-uniform random distribution we will always end up with a peak in the middle of the heightmap. This means it cannot be used directly to determine the height of the terrain on the island itself (because we would always end up with a very similar looking mountain in the middle of the island). So, in order to generate terrain on the landmass, another heightmap is generated (this time with an unmodified random number distribution).<center><div
+onclick='imageViewer.showImage("island_03_terrain_grayscale.png", "Heightmap used to determine terrain on the island", "")' class='cscs'><a
+onclick='return false;' href='island_03_terrain_grayscale.png'><img
+src='thumbs/island_03_terrain_grayscale.png' alt='Heightmap used to determine terrain on the island' /></a></div><div
+onclick='imageViewer.showImage("island_04_terrain_colored.png", "Debug display showing terrain types", "")' class='cscs'><a
+onclick='return false;' href='island_04_terrain_colored.png'><img
+src='thumbs/island_04_terrain_colored.png' alt='Debug display showing terrain types' /></a></div></center> In order to get our final terrain heightmap we combine both the 'landmass' and 'terrain' heightmaps. The combined heightmap will mostly use the sea portion of the 'landmass' heightmap and the land portion of the 'terrain' heightmap. But at the transition between the two they will be interpolated so the height change at the island's shores will be slightly less drastic. The resulting heightmap is then smoothed using a gaussian filter three times.<center><div
+onclick='imageViewer.showImage("island_05_combination_grayscale.png", "Combination of landmass and terrain heightmaps", "")' class='cscs'><a
+onclick='return false;' href='island_05_combination_grayscale.png'><img
+src='thumbs/island_05_combination_grayscale.png' alt='Combination of landmass and terrain heightmaps' /></a></div><div
+onclick='imageViewer.showImage("island_06_combination_colored.png", "Debug display showing terrain types", "")' class='cscs'><a
+onclick='return false;' href='island_06_combination_colored.png'><img
+src='thumbs/island_06_combination_colored.png' alt='Debug display showing terrain types' /></a></div></center><h2>Background selection</h2> Now that we have these heightmaps, we can generate the background color image. This is a relatively straightforward process. We use simple threshold values on the 'landmass' heightmap to determine whether a pixel is supposed to be land (height >= 0.5) or sea (height < 0.5). Additionaly if a pixel is classified as land and its height in the combined heightmap satisfies (height < 0.5) it will be an inland lake. According to this classification we sample from different textures (shown below).<center><div
+onclick='imageViewer.showImage("paper_land.png", "Land texture", "")' class='cscs'><a
+onclick='return false;' href='paper_land.png'><img
+src='thumbs/paper_land.png' alt='Land texture' /></a></div><div
+onclick='imageViewer.showImage("paper_sea.png", "Sea texture", "")' class='cscs'><a
+onclick='return false;' href='paper_sea.png'><img
+src='thumbs/paper_sea.png' alt='Sea texture' /></a></div><div
+onclick='imageViewer.showImage("lake_lines_01.png", "Lake texture", "")' class='cscs'><a
+onclick='return false;' href='lake_lines_01.png'><img
+src='thumbs/lake_lines_01.png' alt='Lake texture' /></a></div><div
+onclick='imageViewer.showImage("intermediate0.png", "Map background", "")' class='cscs'><a
+onclick='return false;' href='intermediate0.png'><img
+src='thumbs/intermediate0.png' alt='Map background' /></a></div></center><h2>Isolines around the landmass</h2> The lines around the island are created by first creating a distance field (indicating the distance from the shore). Then to get each isoline a thresholded image is created (using an increasingly large distance from the shore as the threshold). On these thresholded images an edge detection algorithm is run, the combined results of these edge detection are then rendered on top of the background.<center><div
+onclick='imageViewer.showImage("island_07_threshold.png", "Mask of the island its shape", "")' class='cscs'><a
+onclick='return false;' href='island_07_threshold.png'><img
+src='thumbs/island_07_threshold.png' alt='Mask of the island its shape' /></a></div><div
+onclick='imageViewer.showImage("island_07_distfield.png", "Distance field indicating the distance to the shore", "")' class='cscs'><a
+onclick='return false;' href='island_07_distfield.png'><img
+src='thumbs/island_07_distfield.png' alt='Distance field indicating the distance to the shore' /></a></div><div
+onclick='imageViewer.showImage("island_08_edges.png", "Combination of multiple edge detections", "")' class='cscs'><a
+onclick='return false;' href='island_08_edges.png'><img
+src='thumbs/island_08_edges.png' alt='Combination of multiple edge detections' /></a></div><div
+onclick='imageViewer.showImage("intermediate1.png", "Isolines overlayed on the map background", "")' class='cscs'><a
+onclick='return false;' href='intermediate1.png'><img
+src='thumbs/intermediate1.png' alt='Isolines overlayed on the map background' /></a></div></center><h2>Placing Decorations</h2> Decoration placement is done by generating several lists of points in a <a
+class='external' href='https://www.jasondavies.com/poisson-disc/'>poisson-disc disribution<span></span></a> . For each of the decorations the size of the decoration is used to determine the spacing between the points). For each of the points a decoration appropriate (depending on the height in the combined heightmap) for the location on the map is randomly selected from a few possibilities.<center><div
+onclick='imageViewer.showImage("intermediate2.png", "Added waves", "")' class='cscs'><a
+onclick='return false;' href='intermediate2.png'><img
+src='thumbs/intermediate2.png' alt='Added waves' /></a></div><div
+onclick='imageViewer.showImage("intermediate3.png", "Added mountains", "")' class='cscs'><a
+onclick='return false;' href='intermediate3.png'><img
+src='thumbs/intermediate3.png' alt='Added mountains' /></a></div><div
+onclick='imageViewer.showImage("intermediate4.png", "Added trees", "")' class='cscs'><a
+onclick='return false;' href='intermediate4.png'><img
+src='thumbs/intermediate4.png' alt='Added trees' /></a></div><div
+onclick='imageViewer.showImage("intermediate5.png", "Added compass rose", "")' class='cscs'><a
+onclick='return false;' href='intermediate5.png'><img
+src='thumbs/intermediate5.png' alt='Added compass rose' /></a></div><div
+onclick='imageViewer.showImage("intermediate6.png", "Added a path to the treasure", "")' class='cscs'><a
+onclick='return false;' href='intermediate6.png'><img
+src='thumbs/intermediate6.png' alt='Added a path to the treasure' /></a></div></center><h2>Naming of features</h2> A connected component analysis is used to determine individual mountain 'ranges'. The size of the components (in number of pixels) determines the descriptor used to describe it, these are 'Hill', 'Mountain', 'Range' and 'Massive'.<center><div
+onclick='imageViewer.showImage("island_06.5_connected_components.png", "Labeled connected components using color", "")' class='cscs'><a
+onclick='return false;' href='island_06.5_connected_components.png'><img
+src='thumbs/island_06.5_connected_components.png' alt='Labeled connected components using color' /></a></div><div
+onclick='imageViewer.showImage("output1.png", "Added feature names / Final result", "")' class='cscs'><a
+onclick='return false;' href='output1.png'><img
+src='thumbs/output1.png' alt='Added feature names / Final result' /></a></div></center><h2>Results</h2> The code for the competition was written in C. You can try out the <a
+class='external' href='index2.html'>live demo<span></span></a> which was created by using emscripten to compile the C code. In order to get a new map you simply have to refresh the page.<h2>References</h2>[1] <a
+class='external' href='https://reddit.com/r/proceduralgeneration/'>procedural generation subreddit<span></span></a><br>[2] <a
+class='external' href='https://en.wikipedia.org/wiki/Diamond-square_algorithm'>diamond-square algorithm<span></span></a><br>[3] <a
+class='external' href='https://www.jasondavies.com/poisson-disc/'>poisson-disc disribution<span></span></a><br>[4] <a
+class='external' href='index2.html'>live demo<span></span></a><br><div
+style='clear: both'></div></div></body></html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html
+xmlns='http://www.w3.org/1999/xhtml'><head><link
+rel='icon' href='data:image/gif;base64,R0lGODlhIAAgAPAAAAAAAAAAACH5BAEAAAEALAAAAAAgACAAAAJFjI+py+0Po5y02quA3rz7zXziGI4mV55nqpIY8r1wJxsxpSX3hNpe9dvxVJjVyyUTJn81H60ZUB6ZTWoVBD3kstyut1sAADs=' /><title>Super Mario World - Time-sliced Multiplayer | nullwise</title><meta
+http-equiv='Content-Type' content='text/html;charset=utf-8' /><meta
+name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' /><link
+rel='stylesheet' href='../../style.css?v=sun_01_may' type='text/css' /><script type='text/javascript' src='../../scripts/images.js'></script><script type='text/javascript'>/*<![CDATA[*/function ol() { var i = document.getElementsByTagName('iframe'); if(i.length > 0 && i[0].hasAttribute('delay_src')) i[0].src = i[0].getAttribute('delay_src'); }/*]]>*/</script></head><body
+onload='ol();'><div
+class='header'><div
+class='menu'><div
+class='row page_width'><span
+class='entry'><a
+href='../../index.html'>Home</a> </span><span
+class='entry'><a
+href='../../contact.html'>Contact</a> </span></div><div
+class='hr'></div></div></div><div
+class='content page_width'><div
+class='extrabox'><h2>Download</h2><a
+class='download' href='SMWJailbreak_TimeSlicedMultiplayer_A.SaveRAM'><span></span>BizHawk SaveRAM A (10s)</a></br><a
+class='download' href='SMWJailbreak_TimeSlicedMultiplayer_B.SaveRAM'><span></span>BizHawk SaveRAM B (1s)</a></div><h1>Super Mario World - Time-sliced Multiplayer</h1> This is a mod for Super Mario World to be used in conjuction with SethBling and Cooper Harasyn's SMW jailbreak. You can find more information about it on the <a
+class='external' href='https://www.reddit.com/r/SMWJailbreak/'>SMWJailbreak subreddit<span></span></a>.<h2>Mod description</h2> Each player 'Mario' or 'Luigi' is alternatingly given 10 seconds to play. This requires two controllers to be hooked up to the SNES.
+There are two versions of the mod.<ul><li>Version A gives each player 10 seconds.</li><li>Version B gives each player 1 second at a time. This will require more fine-tuned cooperation.</li></ul><div
+class='wide_img'> <video
+width='256' height='224' controls> <source
+src='demo.webm' /> <source
+src='demo.mp4' /> </video><br
+/> Mario only has control 50% of the time. During the other 50%, the player with the other controller gets to control Luigi.</div><h2>Machine Code A - 10 seconds at a time</h2><pre style='max-height: initial'>
+.org $FF0700
+9C B3 0D AD 00 01 C9 14 D0 08 AD 32 0F 29 01 8D
+B3 0D 6B
+</pre><h2>Machine Code B - 1 second at a time</h2><pre style='max-height: initial'>
+.org $FF0700
+9C B3 0D AD 00 01 C9 14 D0 08 AD 33 0F 29 01 8D
+B3 0D 6B
+</pre><h2>Assembly</h2><pre>
+9C B3 0D: STZ $0DB3
+AD 00 01: LDA $0100
+C9 14   : CMP #$14
+D0 08   : BNE END -----\
+AD 32 0F: LDA $0F32    |  ; Either $0F32 for Version A or $0F33 for Version B
+29 01   : AND #$01     |
+8D B3 0D: STA $0DB3    |
+                       |
+          END:   <-----/
+6B      : RTL
+</pre><h2>References</h2>[1] <a
+class='external' href='https://www.reddit.com/r/SMWJailbreak/'>SMWJailbreak subreddit<span></span></a><br>[2] <a
+class='external' href='https://www.smwcentral.net/?p=map&type=ram'>SMW Central - RAM Map<span></span></a><br>[3] <a
+class='external' href='http://www.defence-force.org/computing/oric/coding/annexe_2/index.htm'>Defence-Force: Oric Coding Appendix 2 - 6502/65816 opcodes<span></span></a><br><div
+style='clear: both'></div></div></body></html>

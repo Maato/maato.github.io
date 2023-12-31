@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html
+xmlns='http://www.w3.org/1999/xhtml'><head><link
+rel='icon' href='data:image/gif;base64,R0lGODlhIAAgAPAAAAAAAAAAACH5BAEAAAEALAAAAAAgACAAAAJFjI+py+0Po5y02quA3rz7zXziGI4mV55nqpIY8r1wJxsxpSX3hNpe9dvxVJjVyyUTJn81H60ZUB6ZTWoVBD3kstyut1sAADs=' /><title>Super Mario World - Yoshi Coin Mod | nullwise</title><meta
+http-equiv='Content-Type' content='text/html;charset=utf-8' /><meta
+name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' /><link
+rel='stylesheet' href='../../style.css?v=sun_01_may' type='text/css' /><script type='text/javascript' src='../../scripts/images.js'></script><script type='text/javascript'>/*<![CDATA[*/function ol() { var i = document.getElementsByTagName('iframe'); if(i.length > 0 && i[0].hasAttribute('delay_src')) i[0].src = i[0].getAttribute('delay_src'); }/*]]>*/</script></head><body
+onload='ol();'><div
+class='header'><div
+class='menu'><div
+class='row page_width'><span
+class='entry'><a
+href='../../index.html'>Home</a> </span><span
+class='entry'><a
+href='../../contact.html'>Contact</a> </span></div><div
+class='hr'></div></div></div><div
+class='content page_width'><div
+class='extrabox'><h2>Download</h2><a
+class='download' href='SMWJailbreak_YoshiCoinMod.SaveRAM'><span></span>BizHawk SaveRAM</a></div><h1>Super Mario World - Yoshi Coin Mod</h1> This is a mod for Super Mario World to be used in conjuction with SethBling and Cooper Harasyn's SMW jailbreak. You can find more information about it on the <a
+class='external' href='https://www.reddit.com/r/SMWJailbreak/'>SMWJailbreak subreddit<span></span></a>.<h2>Mod description</h2> Before you can complete a level you must have collected five yoshi coins. If you did not collect enough coins you will die upon trying to complete the level. Some levels do not have five yoshi coins, those levels are exempted from the yoshi coin requirement. To prevent you from searching for yoshi coins that aren't there those levels are marked by a pre-filled yoshi coin counter. Collecting the midway point is disabled to prevent you from getting stuck in a level, it'll still make you big though.<h2>Machine Code</h2><pre style='max-height: initial'>
+.org $FF0700
+AD BF 13 48 29 07 AA BF 4A 07 FE 85 00 68 4A 4A 
+4A AA BF 52 07 FE 25 00 F0 0E AD 00 01 C9 14 D0 
+28 A9 04 8D 22 14 80 21 9C CD 13 BD 2F 1F 25 00 
+D0 17 AD 93 14 D0 05 AD 34 14 F0 0D A9 09 85 71 
+9C FB 13 9C 34 14 9C 93 14 6B 80 40 20 10 08 04 
+02 01 19 92 18 31 44 80 74 11 A4 00 0A 60
+</pre><h2>Images</h2><div
+class='wide_img'> <video
+width='256' height='224' controls> <source
+src='iggyscastle.webm' /> <source
+src='iggyscastle.mp4' /> </video><br
+/> Levels without Yoshi Coins are indicated by a pre-filled coin counter.</div><div
+class='wide_img'> <video
+width='256' height='224' controls> <source
+src='threecoins.webm' /> <source
+src='threecoins.mp4' /> </video><br
+/> If you don't have enough coins when you try to finish a level, you will die!</div><div
+class='wide_img'> <video
+width='256' height='224' controls> <source
+src='fivecoins.webm' /> <source
+src='fivecoins.mp4' /> </video><br
+/> After collecting all five coins you are ready to finish the level.</div><h2>Assembly</h2><pre>
+
+             CHECK_COINS:
+AD BF 13   : LDA $13BF                ; Level Number
+48         : PHA
+29 07      : AND #$07
+AA         : TAX
+BF ?? ?? ??: LDA AND_TABLE, X         ; not position independent
+85 00      : STA $00
+68         : PLA
+4A         : LSR A
+4A         : LSR A
+4A         : LSR A
+AA         : TAX
+
+             TEST_IF_LEVEL_IS_EXEMPTED:
+BF ?? ?? ??: LDA EXEMPTED_LEVELS, X    ; not position independent
+25 00      : AND $00
+F0 0E      : BEQ TEST_COINS_COLLECTED
+AD 00 01   : LDA $100                  ; game state
+C9 14      : CMP #$14                  ; we are in a level
+D0 28      : BNE END
+A9 04      : LDA #$04
+8D 22 14   : STA $1422                 ; yoshi coin counter display
+80 21      : BRA END
+
+             TEST_COINS_COLLECTED
+9C CD 13   : STZ $13CD                 ; disable midway flag
+BD 2F 1F   : LDA $1f2f,X               ; load byte from yoshi coin info array
+25 00      : AND $00
+D0 17      : BNE END
+
+             CHECK_LEVEL_ENDING
+AD 93 14   : LDA $1493                 ; end level timer
+D0 05      : BNE KILL
+AD 34 14   : LDA $1434                 ; keyhole animation timer
+F0 0D      : BEQ END
+
+             KILL:
+A9 09      : LDA #$09
+85 71      : STA $71
+9C FB 13   : STZ $13FB                 ; prevent freezing of animation
+9C 34 14   : STZ $1434                 ; disable keyhole animation
+9C 93 14   : STZ $1493                 ; disable end level timer
+
+             END:
+6B         : RTL
+
+             AND_TABLE:               
+80 40 20 10
+08 04 02 01
+
+             EXEMPTED_LEVELS_BITMASK:
+19 92 18 31
+44 80 74 11
+A4 00 0A 60
+
+</pre><h2>References</h2>[1] <a
+class='external' href='https://www.reddit.com/r/SMWJailbreak/'>SMWJailbreak subreddit<span></span></a><br>[2] <a
+class='external' href='https://www.gamefaqs.com/snes/519824-super-mario-world/faqs/55428'>Dragon Coin Guide by stromkind<span></span></a><br>[3] <a
+class='external' href='https://www.smwcentral.net/?p=map&type=ram'>SMW Central - RAM Map<span></span></a><br>[4] <a
+class='external' href='http://www.defence-force.org/computing/oric/coding/annexe_2/index.htm'>Defence-Force: Oric Coding Appendix 2 - 6502/65816 opcodes<span></span></a><br><div
+style='clear: both'></div></div></body></html>

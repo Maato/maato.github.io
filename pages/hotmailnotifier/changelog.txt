@@ -1,0 +1,11 @@
+[04-08-2010] - 0.4.2.1
+Fixed bug when mailcount is zero.
+
+[04-08-2010] - 0.4.2.0
+Fixed fetching of mailcount.
+
+[09-02-2008] - 0.4.1.2
+Fixed the problem with Windows 98, where threads wouldn't start.
+
+[04-02-2008] - 0.4.1.1
+Fixed the options 'stack overflow' problem.
